@@ -16,34 +16,36 @@ const defaultTheme = createTheme();
 const baseAddress = "http://localhost:3000";
 
 export default function SignUp() {
-  const [user_name, setUserName] = useState(''); // 이름 상태
-  const [user_id, setUserId] = useState(''); // 아이디 상태
-  const [user_password, setUserPassword] = useState(''); // 비밀번호 상태
-  const [user_email, setUserEmail] = useState(''); // 이메일 상태
-  const [user_phone, setUserPhone] = useState(''); // 전화번호 상태
+  const [name, setUserName] = useState(''); // 이름 상태
+  const [id, setUserId] = useState(''); // 아이디 상태
+  const [password, setUserPassword] = useState(''); // 비밀번호 상태
+  const [email, setUserEmail] = useState(''); // 이메일 상태
+  const [phone_number, setUserPhone] = useState(''); // 전화번호 상태
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = {
-      id: user_id,
-      password: user_password,
-      email: user_email,
-      name: user_name,
-      phone_number: user_phone,
+      user_id: id, // 수정된 부분
+      user_password: password, // 수정된 부분
+      user_email: email, // 수정된 부분
+      user_name: name, // 수정된 부분
+      user_phone: phone_number // 수정된 부분
     };
 
     console.log('회원가입 시도:', formData);
 
     try {
-      const response = await axios.post(`${baseAddress}/auth/signup`, formData);
+      const response = await axios.post(`${baseAddress}/user/signup`, formData);
       console.log('서버 응답:', response.data);
-      localStorage.setItem('token', response.data.token); // 토큰 저장
+      localStorage.setItem('token', response.data.token); // 회원가입 성공시 응답으로 받은 토큰을 localstorage에 저장
       alert('회원가입 성공!');
       navigate('/mypage'); // 회원가입 후 마이페이지로 이동
     } catch (error) {
-      console.error('에러 발생:', error);
-      alert('회원가입 실패. 다시 시도해 주세요.');
+      const errorMessage = error.response?.data?.message || '회원가입 실패. 다시 시도해 주세요.';
+      console.error('에러 발생:', error.response.data);
+      alert(errorMessage); // 서버에서 받은 에러 메시지로 알림 표시
+      
     }
   };
 
@@ -57,8 +59,8 @@ export default function SignUp() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center', // 추가된 부분
-            height: '100%', // 추가된 부분
+            justifyContent: 'center',
+            height: '100%',
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -78,7 +80,7 @@ export default function SignUp() {
                   id="name"
                   label="이름"
                   autoFocus
-                  value={user_name}
+                  value={name} // 수정된 부분
                   onChange={(e) => setUserName(e.target.value)}
                 />
               </Grid>
@@ -90,7 +92,7 @@ export default function SignUp() {
                   label="아이디"
                   name="id"
                   autoComplete="id"
-                  value={user_id}
+                  value={id} // 수정된 부분
                   onChange={(e) => setUserId(e.target.value)}
                 />
               </Grid>
@@ -103,7 +105,7 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
-                  value={user_password}
+                  value={password} // 수정된 부분
                   onChange={(e) => setUserPassword(e.target.value)}
                 />
               </Grid>
@@ -115,7 +117,7 @@ export default function SignUp() {
                   label="이메일"
                   name="email"
                   autoComplete="email"
-                  value={user_email}
+                  value={email} // 수정된 부분
                   onChange={(e) => setUserEmail(e.target.value)}
                 />
               </Grid>
@@ -127,7 +129,7 @@ export default function SignUp() {
                   label="전화번호"
                   name="phone"
                   autoComplete="phone"
-                  value={user_phone}
+                  value={phone_number} // 수정된 부분
                   onChange={(e) => setUserPhone(e.target.value)}
                 />
               </Grid>

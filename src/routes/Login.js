@@ -15,11 +15,11 @@ import axios from 'axios';
 const defaultTheme = createTheme();
 const baseAddress = "http://localhost:3000";
 
-export default function Login() {
+export default function Login({ setIsLoggedIn }) {  // setIsLoggedIn props 추가
   const location = useLocation();
   const navigate = useNavigate();
-  const [user_id, setUserId] = useState(''); // 아이디 상태
-  const [user_password, setUserPassword] = useState(''); // 비밀번호 상태
+  const [id, setUserId] = useState(''); // 아이디 상태
+  const [password, setUserPassword] = useState(''); // 비밀번호 상태
 
   useEffect(() => {
     if (location.state) {
@@ -31,21 +31,23 @@ export default function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = {
-      id: user_id,
-      password: user_password,
+      user_id: id,
+      user_password: password,
     };
 
     console.log('로그인 시도:', formData);
 
     try {
-      const response = await axios.post(`${baseAddress}/auth/signin`, formData);
+      const response = await axios.post(`${baseAddress}/login`, formData);
       console.log('서버 응답:', response.data);
       localStorage.setItem('token', response.data.token); // JWT 토큰 저장
       alert('로그인 성공!');
+      setIsLoggedIn(true); // 로그인 성공 시 상태 업데이트
       navigate('/mypage'); // 로그인 후 마이페이지로 이동
     } catch (error) {
-      console.error('에러 발생:', error);
-      alert('로그인 실패. 다시 시도해 주세요.');
+      const errorMessage = error.response?.data?.message || '로그인 실패. 다시 시도해 주세요.';
+      console.error('에러 발생:', error.response.data);
+      alert(errorMessage);
     }
   };
 
@@ -79,7 +81,7 @@ export default function Login() {
               name="id"
               autoComplete="id"
               autoFocus
-              value={user_id}
+              value={id}
               onChange={(e) => setUserId(e.target.value)}
             />
             <TextField
@@ -91,7 +93,7 @@ export default function Login() {
               type="password"
               id="password"
               autoComplete="current-password"
-              value={user_password}
+              value={password}
               onChange={(e) => setUserPassword(e.target.value)}
             />
             <Button

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './routes/Home';
 import MyPage from './routes/Mypage';
@@ -9,8 +9,16 @@ import SignUp from './routes/Signup';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true); // 토큰이 있으면 로그인 상태로 설정
+    }
+  }, []);
+
   const handleLogout = () => {
-    setIsLoggedIn(false); // 로그아웃 처리
+    localStorage.removeItem('token'); // 로그아웃 시 토큰 삭제
+    setIsLoggedIn(false);
   };
 
   return (
@@ -61,13 +69,14 @@ function App() {
       </header>
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Home" element={<Home />} />
+        <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
+        <Route path="/Home" element={<Home isLoggedIn={isLoggedIn} />} />
         <Route path="/Mypage" element={<MyPage />} />
         <Route path="/Edit" element={<Edit />} />
         <Route path="/Login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/Signup" element={<SignUp />} />
       </Routes>
+
     </Router>
   );
 }
